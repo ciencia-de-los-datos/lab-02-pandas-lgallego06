@@ -150,12 +150,33 @@ def pregunta_08():
     39   39   E    5  1998-01-26    44
 
     """
-    tbl0['suma']=tbl0['_c0']+tbl0['_c2']
-    print(tbl0)
-    return tbl0
+    tbl0_1=tbl0
+    tbl0_1['suma']=tbl0_1['_c0']+tbl0_1['_c2']
+    print(tbl0_1)
+    return tbl0_1
 #pregunta_08()
 
 
+'''def pregunta_09():
+    """
+    Agregue el año como una columna al archivo `tbl0.tsv`.
+
+    Rta/
+        _c0 _c1  _c2         _c3  year
+    0     0   E    1  1999-02-28  1999
+    1     1   A    2  1999-10-28  1999
+    2     2   B    5  1998-05-02  1998
+    ...
+    37   37   C    9  1997-07-22  1997
+    38   38   E    1  1999-09-28  1999
+    39   39   E    5  1998-01-26  1998
+
+    """
+    tbl0_2=tbl0
+    tbl0_2['year']=tbl0['_c3'].str[:4].astype(int)
+    print(tbl0_2)
+    return tbl0_2
+pregunta_09()'''
 def pregunta_09():
     """
     Agregue el año como una columna al archivo `tbl0.tsv`.
@@ -171,13 +192,16 @@ def pregunta_09():
     39   39   E    5  1998-01-26  1998
 
     """
-    tbl0['year']=tbl0['_c3'].str[:4].astype(int)
-    print(tbl0)
-    return tbl0
+    
+    dates=pd.to_datetime(tbl0._c3, errors= "ignore" )
+    years=[(i[:4]) for i in dates]
+    tbl=tbl0.assign(year=years)
+    
+    print(tbl)
+    return tbl
 #pregunta_09()
 
-
-def pregunta_10():
+'''def pregunta_10():
     """
     Construya una tabla que contenga _c1 y una lista separada por ':' de los valores de
     la columna _c2 para el archivo `tbl0.tsv`.
@@ -194,6 +218,36 @@ def pregunta_10():
     tabla=tbl0.groupby('_c1')['_c2'].apply(lambda x:':'.join(map(str,sorted(x)))).reset_index()
     print(tabla)
     return tabla
+#pregunta_10()'''
+def pregunta_10():
+    """
+    Construya una tabla que contenga _c1 y una lista separada por ':' de los valores de
+    la columna _c2 para el archivo `tbl0.tsv`.
+
+    Rta/
+                                   _c1
+      _c0
+    0   A              1:1:2:3:6:7:8:9
+    1   B                1:3:4:5:6:8:9
+    2   C                    0:5:6:7:9
+    3   D                  1:2:3:5:5:7
+    4   E  1:1:2:3:3:4:5:5:5:6:7:8:8:9
+
+    """
+    #Filtrar columnas 1 y 2
+    data= tbl0.filter(items=('_c1','_c2'))
+    #renombro columnas
+    #data.columns= ['_c0','_c1']
+    #para ordenar de acuerdo a los valores de la columna _c0
+    data=data.sort_values('_c2')
+    #Convierto a string _c1
+    data['_c2']=data['_c2'].astype(str)
+    #Agrupo por valores de _c0 y agrego valores de _c1
+    tabla10=data.groupby(['_c1'], as_index=False).agg({'_c2':':'.join})
+    tabla10.set_index('_c1', inplace=True)
+ 
+    print(tabla10)
+    return tabla10
 #pregunta_10()
 
 
